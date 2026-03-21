@@ -7,9 +7,16 @@ const UserManager = require('./user_manager');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0';
+
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 // Serve static files from the parent directory (project root)
 app.use(express.static(path.join(__dirname, '../')));
@@ -138,6 +145,10 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+    console.log(`========================================`);
+    console.log(`德州扑克服务器已启动`);
+    console.log(`本地访问: http://localhost:${PORT}`);
+    console.log(`Railway 部署: 请查看 Railway 控制台获取公网地址`);
+    console.log(`========================================`);
 });

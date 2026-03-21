@@ -732,7 +732,18 @@ class Game {
         
         const diff = this.currentBet - cpu.currentBet;
         const activePlayersCount = this.players.filter(p => (this.mode==='tournament' || (p.isActive && !p.isSittingOut)) && !p.folded).length;
-
+        const totalPlayers = this.players.length;
+        
+        // Calculate position (0 = dealer, 1 = small blind, etc.)
+        const position = (this.activePlayerIndex - this.dealerIndex + totalPlayers) % totalPlayers;
+        const positionFactor = this.calculatePositionFactor(position, totalPlayers);
+        
+        // Calculate pot odds
+        const potOdds = this.calculatePotOdds(diff);
+        
+        // Calculate effective stack size
+        const effectiveStack = Math.min(cpu.chips, ...this.players.filter(p => !p.folded).map(p => p.chips));
+        
         let winRate = 0;
         try {
             winRate = OddsCalculator.calculate(cpu.hand, this.communityCards, activePlayersCount - 1);
@@ -740,50 +751,102 @@ class Game {
             console.error("Odds calculation error:", e);
             winRate = 1 / activePlayersCount;
         }
+        
+        // Adjust win rate based on position
+        winRate *= positionFactor;
 
         let action = 'fold';
-        // console.log(`[AI ${cpu.name}] WR: ${winRate.toFixed(2)}`);
+        // console.log(`[AI ${cpu.name}] WR: ${winRate.toFixed(2)}, Position: ${position}, Pot Odds: ${potOdds.toFixed(2)}`);
 
         if (this.phase === 'pre-flop') {
             const baseThreshold = (1 / activePlayersCount);
+            // Tighter players have higher thresholds, looser players have lower thresholds
             const threshold = baseThreshold + (cpu.tightness * 0.15) - 0.05;
 
             if (winRate >= threshold) {
                 if (diff === 0) action = 'check';
                 else action = 'call';
 
-                if (winRate > threshold + 0.15 && Math.random() < cpu.aggression) {
+                // More aggressive if we have strong hand and good position
+                if (winRate > threshold + 0.15 && (Math.random() < cpu.aggression + (positionFactor * 0.2))) {
                     action = 'raise';
                 }
             } else {
-                if (diff === 0) action = 'check';
-                else action = 'fold';
+                if (diff === 0) {
+                    // Check if we can steal blinds with weak hand in late position
+                    if (position > totalPlayers * 0.6 && Math.random() < cpu.aggression * 0.5) {
+                        action = 'raise'; // Steal blinds
+                    } else {
+                        action = 'check';
+                    }
+                } else {
+                    // Fold unless we have good pot odds
+                    if (potOdds > 1.5 && winRate > baseThreshold * 0.8) {
+                        action = 'call';
+                    } else {
+                        action = 'fold';
+                    }
+                }
             }
 
         } else {
             const averageWinRate = 1 / activePlayersCount;
-            if (winRate > averageWinRate * 1.1) { 
-                if (Math.random() < cpu.aggression) {
+            
+            // Calculate hand strength relative to average
+            const handStrength = winRate / averageWinRate;
+            
+            if (handStrength > 1.2) { 
+                // Strong hand
+                if (Math.random() < cpu.aggression + (positionFactor * 0.1)) {
                     action = 'raise'; 
                 } else {
                     if (diff === 0) action = 'check';
                     else action = 'call'; 
                 }
-            } else {
-                if (Math.random() < cpu.bluffFrequency) {
-                    action = 'raise'; 
+            } else if (handStrength > 0.8) {
+                // Medium hand
+                if (diff === 0) {
+                    // Check if we can bluff raise based on position and aggression
+                    if (Math.random() < cpu.aggression * 0.3 + (positionFactor * 0.1)) {
+                        action = 'raise';
+                    } else {
+                        action = 'check';
+                    }
                 } else {
-                    if (diff === 0) action = 'check';
-                    else action = 'fold';
+                    // Call if pot odds are good
+                    if (potOdds > 1.2) {
+                        action = 'call';
+                    } else {
+                        action = 'fold';
+                    }
+                }
+            } else {
+                // Weak hand
+                if (diff === 0) {
+                    // Check or bluff based on position and aggression
+                    if (Math.random() < cpu.bluffFrequency * (1 + positionFactor * 0.5)) {
+                        action = 'raise';
+                    } else {
+                        action = 'check';
+                    }
+                } else {
+                    // Fold unless pot odds are excellent
+                    if (potOdds > 2.0) {
+                        action = 'call';
+                    } else if (Math.random() < cpu.bluffFrequency * 0.5) {
+                        action = 'raise';
+                    } else {
+                        action = 'fold';
+                    }
                 }
             }
         }
 
         if (action === 'raise') {
-             const callAmt = diff;
-             if (cpu.chips <= callAmt) {
-                 action = 'call';
-             }
+            const callAmt = diff;
+            if (cpu.chips <= callAmt) {
+                action = 'call';
+            }
         }
         
         if (action === 'check' && diff > 0) {
@@ -791,6 +854,23 @@ class Game {
         }
 
         this.handleAction(action);
+    }
+    
+    /**
+     * Calculate position factor (0.8 - 1.2) where higher values mean better position
+     */
+    calculatePositionFactor(position, totalPlayers) {
+        // Dealer is best position (highest factor), early positions are worst
+        const positionRatio = position / totalPlayers;
+        return 0.8 + (positionRatio * 0.4);
+    }
+    
+    /**
+     * Calculate pot odds (pot size / call amount)
+     */
+    calculatePotOdds(callAmount) {
+        if (callAmount === 0) return 0;
+        return this.pot / callAmount;
     }
 
     dealCommunity(count) {
