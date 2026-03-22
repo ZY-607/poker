@@ -1140,24 +1140,17 @@ class Game {
         const unlocked = AchievementManager.check(profile.stats, profile.chips);
         
         if (unlocked.length > 0) {
+            let totalReward = 0;
             unlocked.forEach(ach => {
                 this.ui.showAchievementToast(ach);
+                totalReward += ach.reward;
             });
-            const newProfile = DataManager.load();
+            
             const user = this.players[0];
             
-            // If achievement gives reward, update server AND local UI immediately
-            if(networkManager) networkManager.updateBalance(newProfile.chips);
+            this.bankroll += totalReward;
             
-            // Update local bankroll variable (profit calculation)
-            this.bankroll = newProfile.chips - user.chips; 
-
-            // FORCE UI UPDATE: Update player's chip display immediately to show reward
-            user.chips = newProfile.chips; // Sync object
-            this.ui.updatePlayerInfo(user, 0); // Update visual (0 is player index)
-            
-            // Also update the "Total Assets" in menu if possible, but we are in game
-            // The stat overlay will read from DataManager so it's fine.
+            if(networkManager) networkManager.updateBalance(this.bankroll + user.chips);
         }
     }
 }

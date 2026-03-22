@@ -96,16 +96,8 @@ class AchievementManager {
         });
 
         if (unlocked.length > 0) {
-            // Save unlocked IDs
             profile.achievements = Array.from(achievedIds);
-            
-            // Add rewards
-            let totalReward = 0;
-            unlocked.forEach(u => totalReward += u.reward);
-            profile.chips += totalReward;
-            
             DataManager.save(profile);
-            
             return unlocked;
         }
         
