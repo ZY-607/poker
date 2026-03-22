@@ -37,7 +37,7 @@ class NetworkManager {
         const events = [
             'roomCreated', 'updateState', 'playerAction', 
             'gameStart', 'gameOver', 'message', 
-            'roomList', 'joinError',
+            'roomList', 'joinError', 'leftRoom',
             'loginSuccess', 'loginError',
             'registerSuccess', 'registerError',
             'syncSuccess', 'profileData', 'achievementUnlocked'
@@ -170,7 +170,7 @@ class NetworkManager {
         const events = [
             'roomCreated', 'updateState', 'playerAction', 
             'gameStart', 'gameOver', 'message', 
-            'roomList', 'joinError',
+            'roomList', 'joinError', 'leftRoom',
             'loginSuccess', 'loginError',
             'registerSuccess', 'registerError',
             'syncSuccess', 'profileData', 'achievementUnlocked'

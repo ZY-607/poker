@@ -142,8 +142,8 @@ class OnlineGame {
 
     exitGame() {
         if(confirm('确定要退出房间吗？')) {
-             // 1. Disconnect network
-             networkManager.disconnect();
+             // 1. Leave room (but stay connected)
+             networkManager.leaveRoom();
              
              // 2. Reset internal state
              this.roomId = null;
@@ -166,6 +166,10 @@ class OnlineGame {
              // Clear player cards
              const playerCards = document.getElementById('player-cards');
              if(playerCards) playerCards.innerHTML = '';
+             
+             // Reset version tag
+             const ver = document.querySelector('.version-tag');
+             if(ver) ver.innerText = ver.innerText.split('|')[0].trim();
              
              // Reset player chips display in menu
              const data = DataManager.load();
