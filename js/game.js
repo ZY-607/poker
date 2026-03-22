@@ -252,19 +252,16 @@ class Game {
 
     stopGame() {
         if (this.mode === 'cash') {
-            // Save Chips Logic for Cash Game
             if (this.players && this.players.length > 0) {
                 const user = this.players[0];
                 const currentTotal = this.bankroll + user.chips;
                 DataManager.updateChips(currentTotal);
-                if(networkManager) networkManager.updateBalance(currentTotal);
             }
         } else {
-            // Tournament: No refund if quit manually.
-            // Bankroll was already deducted at init.
         }
+        
+        DataManager.syncToServer();
     
-        // Reset game state
         this.clearAllTimers();
         this.players = [];
         this.communityCards = [];

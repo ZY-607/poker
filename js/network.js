@@ -2,7 +2,8 @@ class NetworkManager {
     constructor() {
         this.socket = null;
         this.isConnected = false;
-        this.listeners = {}; // Changed from callbacks to listeners array
+        this.listeners = {};
+        this.currentUser = null;
     }
 
     connect() {
@@ -10,7 +11,6 @@ class NetworkManager {
         
         this.socket = io();
 
-        // Generic event handler
         const handleEvent = (event, data) => {
             if (this.listeners[event]) {
                 this.listeners[event].forEach(cb => cb(data));
@@ -39,7 +39,8 @@ class NetworkManager {
             'gameStart', 'gameOver', 'message', 
             'roomList', 'joinError',
             'loginSuccess', 'loginError',
-            'registerSuccess', 'registerError'
+            'registerSuccess', 'registerError',
+            'syncSuccess', 'profileData', 'achievementUnlocked'
         ];
 
         events.forEach(evt => {
@@ -47,7 +48,6 @@ class NetworkManager {
         });
     }
 
-    // --- Auth Methods ---
     login(username, password) {
         this.socket.emit('login', { username, password });
     }
@@ -56,8 +56,6 @@ class NetworkManager {
         this.socket.emit('register', { username, password, avatarId });
     }
 
-    // --- Room Methods ---
-    // Name is now handled by session on server
     createRoom(password) {
         this.socket.emit('createRoom', { password });
     }
@@ -80,11 +78,44 @@ class NetworkManager {
         }
     }
 
+    syncProfile(profileData) {
+        if (this.isConnected && this.socket) {
+            this.socket.emit('syncProfile', profileData);
+        }
+    }
+
+    getProfile() {
+        if (this.isConnected && this.socket) {
+            this.socket.emit('getProfile');
+        }
+    }
+
+    recordHand(result) {
+        if (this.isConnected && this.socket) {
+            this.socket.emit('recordHand', result);
+        }
+    }
+
+    unlockAchievement(achievementId) {
+        if (this.isConnected && this.socket) {
+            this.socket.emit('unlockAchievement', achievementId);
+        }
+    }
+
+    setCurrentUser(user) {
+        this.currentUser = user;
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
     disconnect() {
         if (this.socket) {
             this.socket.disconnect();
             this.socket = null;
             this.isConnected = false;
+            this.currentUser = null;
         }
     }
 

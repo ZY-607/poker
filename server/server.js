@@ -128,8 +128,43 @@ io.on('connection', (socket) => {
         const username = sessions[socket.id];
         if (username) {
             userManager.updateChips(username, amount);
-            // Optionally broadcast or confirm
-            // console.log(`Updated balance for ${username}: ${amount}`);
+        }
+    });
+
+    // Sync full profile from client to server
+    socket.on('syncProfile', (profileData) => {
+        const username = sessions[socket.id];
+        if (username) {
+            userManager.updateProfile(username, profileData);
+            socket.emit('syncSuccess', { message: '数据同步成功' });
+        }
+    });
+
+    // Get full profile from server
+    socket.on('getProfile', () => {
+        const username = sessions[socket.id];
+        if (username) {
+            const profile = userManager.getFullProfile(username);
+            socket.emit('profileData', profile);
+        }
+    });
+
+    // Record a hand result (for single player mode)
+    socket.on('recordHand', (result) => {
+        const username = sessions[socket.id];
+        if (username) {
+            userManager.recordHand(username, result);
+        }
+    });
+
+    // Unlock achievement
+    socket.on('unlockAchievement', (achievementId) => {
+        const username = sessions[socket.id];
+        if (username) {
+            const isNew = userManager.unlockAchievement(username, achievementId);
+            if (isNew) {
+                socket.emit('achievementUnlocked', achievementId);
+            }
         }
     });
 

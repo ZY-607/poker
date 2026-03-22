@@ -261,11 +261,19 @@ function initAuthUI() {
         authOverlay.style.display = 'none';
         document.getElementById('main-menu').style.display = 'flex';
         
-        // Update local DataManager with server chips
-        DataManager.updateChips(user.chips);
+        networkManager.setCurrentUser(user);
+        
+        DataManager.setServerData({
+            chips: user.chips,
+            nickname: user.nickname || user.username,
+            avatar: user.avatar || 0,
+            stats: user.stats || DataManager.defaultProfile.stats,
+            history: user.history || [],
+            achievements: user.achievements || []
+        });
+        
         document.getElementById('menu-chip-count').innerText = user.chips;
         
-        // Also save simple session locally if we want auto-login later
         localStorage.setItem('last_user', user.username);
     });
 
@@ -274,8 +282,17 @@ function initAuthUI() {
         authOverlay.style.display = 'none';
         document.getElementById('main-menu').style.display = 'flex';
         
-        // Update local DataManager with server chips
-        DataManager.updateChips(user.chips);
+        networkManager.setCurrentUser(user);
+        
+        DataManager.setServerData({
+            chips: user.chips,
+            nickname: user.nickname || user.username,
+            avatar: user.avatar || 0,
+            stats: user.stats || DataManager.defaultProfile.stats,
+            history: user.history || [],
+            achievements: user.achievements || []
+        });
+        
         document.getElementById('menu-chip-count').innerText = user.chips;
     });
 

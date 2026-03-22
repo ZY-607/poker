@@ -1,9 +1,11 @@
 class DataManager {
-    static KEY = 'texasholdem_profile_v1';
+    static KEY = 'texasholdem_profile_cache_v1';
+    static _serverData = null;
+    static _isLoggedIn = false;
 
     static get defaultProfile() {
         return {
-            chips: 1000,
+            chips: 10000,
             nickname: '玩家',
             avatar: 0,
             stats: {
@@ -12,13 +14,28 @@ class DataManager {
                 totalProfit: 0,
                 biggestPot: 0,
                 bestHand: { rank: 0, name: "无", cards: [] },
+                rankWins: {}
             },
             history: [],
             achievements: []
         };
     }
 
+    static setServerData(data) {
+        this._serverData = data;
+        this._isLoggedIn = true;
+        this._saveToCache(data);
+    }
+
+    static getIsLoggedIn() {
+        return this._isLoggedIn;
+    }
+
     static load() {
+        if (this._isLoggedIn && this._serverData) {
+            return this._serverData;
+        }
+        
         const data = localStorage.getItem(this.KEY);
         if (!data) return this.defaultProfile;
         try {
@@ -30,8 +47,28 @@ class DataManager {
         }
     }
 
+    static _saveToCache(data) {
+        try {
+            localStorage.setItem(this.KEY, JSON.stringify(data));
+        } catch (e) {
+            console.error("Cache save error", e);
+        }
+    }
+
     static save(data) {
-        localStorage.setItem(this.KEY, JSON.stringify(data));
+        this._serverData = data;
+        this._saveToCache(data);
+        
+        if (this._isLoggedIn && networkManager && networkManager.isConnected) {
+            networkManager.syncProfile({
+                chips: data.chips,
+                nickname: data.nickname,
+                avatar: data.avatar,
+                stats: data.stats,
+                history: data.history,
+                achievements: data.achievements
+            });
+        }
     }
 
     static updateChips(amount) {
@@ -58,14 +95,11 @@ class DataManager {
     }
 
     static recordHand(result) {
-        // result: { profit: number, hand: {rank, name, tieBreakers}, pot: number, cards: [] }
         const data = this.load();
         
-        // Update basic stats
         data.stats.totalHands++;
         if (result.profit > 0) {
             data.stats.wins++;
-            // Update rank wins
             if (result.hand && result.hand.rank) {
                 if (!data.stats.rankWins) data.stats.rankWins = {};
                 if (!data.stats.rankWins[result.hand.rank]) data.stats.rankWins[result.hand.rank] = 0;
@@ -78,20 +112,14 @@ class DataManager {
             data.stats.biggestPot = result.pot;
         }
 
-        // Check best hand
-        // Rank 1-9 (High Card to Straight Flush)
         if (result.hand && result.hand.rank > data.stats.bestHand.rank) {
             data.stats.bestHand = {
                 rank: result.hand.rank,
                 name: result.hand.name,
-                cards: result.cards // Array of card strings or objects
+                cards: result.cards || []
             };
-        } else if (result.hand && result.hand.rank === data.stats.bestHand.rank) {
-             // Tie-breaker logic could go here, but for now simple overwrite if same rank is acceptable or ignore
-             // Usually we want the "highest" cards, but let's keep it simple: only upgrade if rank is strictly higher
         }
 
-        // Add to history (limit to last 20)
         const historyItem = {
             date: new Date().toLocaleString(),
             profit: result.profit,
@@ -105,7 +133,28 @@ class DataManager {
     }
     
     static reset() {
-        this.save(this.defaultProfile);
+        this._serverData = null;
+        this._isLoggedIn = false;
+        localStorage.removeItem(this.KEY);
         return this.defaultProfile;
+    }
+
+    static logout() {
+        this._serverData = null;
+        this._isLoggedIn = false;
+    }
+
+    static syncToServer() {
+        if (this._isLoggedIn && networkManager && networkManager.isConnected) {
+            const data = this.load();
+            networkManager.syncProfile({
+                chips: data.chips,
+                nickname: data.nickname,
+                avatar: data.avatar,
+                stats: data.stats,
+                history: data.history,
+                achievements: data.achievements
+            });
+        }
     }
 }
