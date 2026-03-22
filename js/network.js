@@ -65,7 +65,22 @@ class NetworkManager {
     }
 
     getRoomList() {
+        if (!this.socket || !this.isConnected) {
+            this.reconnect();
+            setTimeout(() => {
+                if (this.socket) {
+                    this.socket.emit('getRoomList');
+                }
+            }, 500);
+            return;
+        }
         this.socket.emit('getRoomList');
+    }
+
+    leaveRoom() {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('leaveRoom');
+        }
     }
 
     sendAction(action, amount) {
@@ -117,6 +132,53 @@ class NetworkManager {
             this.isConnected = false;
             this.currentUser = null;
         }
+    }
+
+    reconnect() {
+        if (this.socket && this.isConnected) return;
+        
+        console.log('[NetworkManager] Reconnecting...');
+        this.socket = io();
+        this.isConnected = false;
+        
+        const handleEvent = (event, data) => {
+            if (this.listeners[event]) {
+                this.listeners[event].forEach(cb => cb(data));
+            }
+        };
+
+        this.socket.on('connect', () => {
+            console.log('Reconnected to server:', this.socket.id);
+            this.isConnected = true;
+            handleEvent('connect');
+            
+            if (this.currentUser) {
+                this.login(this.currentUser.username, this.currentUser.password);
+            }
+        });
+
+        this.socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            this.isConnected = false;
+            handleEvent('disconnect');
+        });
+
+        this.socket.on('error', (msg) => {
+            handleEvent('error', msg);
+        });
+
+        const events = [
+            'roomCreated', 'updateState', 'playerAction', 
+            'gameStart', 'gameOver', 'message', 
+            'roomList', 'joinError',
+            'loginSuccess', 'loginError',
+            'registerSuccess', 'registerError',
+            'syncSuccess', 'profileData', 'achievementUnlocked'
+        ];
+
+        events.forEach(evt => {
+            this.socket.on(evt, (data) => handleEvent(evt, data));
+        });
     }
 
     on(event, callback) {

@@ -123,6 +123,26 @@ io.on('connection', (socket) => {
         roomManager.startGame(socket.id);
     });
 
+    // Client leaves room (but stays connected)
+    socket.on('leaveRoom', () => {
+        const roomId = roomManager.socketToRoom.get(socket.id);
+        if (roomId) {
+            const game = roomManager.rooms.get(roomId);
+            if (game) {
+                game.removePlayer(socket.id);
+                if (game.players.length === 0) {
+                    roomManager.rooms.delete(roomId);
+                    console.log(`Room destroyed: ${roomId}`);
+                }
+                roomManager.broadcastRoomList();
+            }
+            socket.leave(roomId);
+            roomManager.socketToRoom.delete(socket.id);
+            socket.emit('leftRoom');
+            console.log(`User ${socket.id} left room ${roomId}`);
+        }
+    });
+
     // Client updates balance (e.g. from single player mode)
     socket.on('updateBalance', (amount) => {
         const username = sessions[socket.id];
