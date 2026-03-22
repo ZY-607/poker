@@ -157,6 +157,10 @@ class Game {
                  historyContainer.appendChild(div);
              });
 
+             const avatars = ['👨‍💼', '👩‍💼', '🕵️‍♂️', '🤠', '👽', '🤖', '🐶', '🐯'];
+             document.getElementById('profile-avatar').innerText = avatars[data.avatar || 0];
+             document.getElementById('profile-nickname-input').value = data.nickname || '玩家';
+
              document.getElementById('main-menu').style.display = 'none';
              document.getElementById('stats-overlay').style.display = 'flex';
         });
@@ -173,6 +177,8 @@ class Game {
                 document.getElementById('btn-stats-close').click();
             }
         });
+
+        initProfileUI();
 
         document.getElementById('btn-menu-exit').addEventListener('click', () => {
             if(confirm('确定要退出游戏吗？')) {
@@ -1152,5 +1158,75 @@ class Game {
             
             if(networkManager) networkManager.updateBalance(this.bankroll + user.chips);
         }
+    }
+}
+
+function initProfileUI() {
+    const avatars = ['👨‍💼', '👩‍💼', '🕵️‍♂️', '🤠', '👽', '🤖', '🐶', '🐯'];
+    
+    const avatarGrid = document.getElementById('profile-avatar-grid');
+    if (avatarGrid) {
+        avatarGrid.innerHTML = '';
+        avatars.forEach((emoji, index) => {
+            const div = document.createElement('div');
+            div.className = 'avatar-item';
+            div.innerText = emoji;
+            div.dataset.id = index;
+            
+            div.addEventListener('click', () => {
+                document.querySelectorAll('#profile-avatar-grid .avatar-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                
+                DataManager.updateProfile(undefined, index);
+                document.getElementById('profile-avatar').innerText = emoji;
+                
+                const playerAvatar = document.getElementById('player-avatar');
+                if (playerAvatar) playerAvatar.innerText = emoji;
+                
+                document.getElementById('avatar-selection-modal').style.display = 'none';
+            });
+            
+            avatarGrid.appendChild(div);
+        });
+    }
+    
+    const btnChangeAvatar = document.getElementById('btn-change-avatar');
+    if (btnChangeAvatar) {
+        btnChangeAvatar.addEventListener('click', () => {
+            const currentAvatar = DataManager.getAvatar();
+            document.querySelectorAll('#profile-avatar-grid .avatar-item').forEach((el, idx) => {
+                el.classList.toggle('selected', idx === currentAvatar);
+            });
+            document.getElementById('avatar-selection-modal').style.display = 'flex';
+        });
+    }
+    
+    const btnCloseAvatarModal = document.getElementById('btn-close-avatar-modal');
+    if (btnCloseAvatarModal) {
+        btnCloseAvatarModal.addEventListener('click', () => {
+            document.getElementById('avatar-selection-modal').style.display = 'none';
+        });
+    }
+    
+    const btnSaveNickname = document.getElementById('btn-save-nickname');
+    if (btnSaveNickname) {
+        btnSaveNickname.addEventListener('click', () => {
+            const nickname = document.getElementById('profile-nickname-input').value.trim();
+            if (!nickname || nickname.length < 1) {
+                alert('昵称不能为空');
+                return;
+            }
+            if (nickname.length > 8) {
+                alert('昵称最多8个字符');
+                return;
+            }
+            
+            DataManager.updateProfile(nickname, undefined);
+            
+            const playerName = document.getElementById('player-name');
+            if (playerName) playerName.innerText = nickname;
+            
+            alert('昵称已保存');
+        });
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>德州扑克 v3.4.1</title>
+    <title>德州扑克 v3.4.3</title>
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
     
-    <link rel="stylesheet" href="style.css?v=3.4.1">
+    <link rel="stylesheet" href="style.css?v=3.4.3">
 </head>
 <body>
     <!-- Auth Overlay -->
@@ -65,7 +65,7 @@
             <div class="menu-buttons">
                 <button id="btn-menu-single" class="btn-menu">单机模式</button>
                 <button id="btn-menu-multi" class="btn-menu">联机对战</button>
-                <button id="btn-menu-stats" class="btn-menu">个人战绩</button>
+                <button id="btn-menu-stats" class="btn-menu">个人资料</button>
                 <button id="btn-menu-achievements" class="btn-menu">🏆 成就系统</button>
                 <button id="btn-menu-rankings" class="btn-menu">🃏 牌型说明</button>
                 <button id="btn-menu-exit" class="btn-menu">退出游戏</button>
@@ -89,12 +89,30 @@
     <!-- Stats Overlay -->
     <div id="stats-overlay" class="lobby-overlay" style="display: none;">
         <div class="lobby-box stats-box">
-            <h1>个人战绩</h1>
+            <h1>个人资料</h1>
             
-            <!-- DEBUG TRIGGER BUTTON (TEMPORARY) -->
-            <button onclick="window.game.ui.showAchievementToast({title:'测试成就', reward:999})" style="background:red; color:white; border:none; padding:5px; margin-bottom:10px; cursor:pointer;">
-                [调试] 强制触发成就弹窗
-            </button>
+            <div class="profile-section">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar" id="profile-avatar">👨‍💼</div>
+                    <button class="btn-change-avatar" id="btn-change-avatar">更换头像</button>
+                </div>
+                <div class="profile-nickname-container">
+                    <div class="profile-nickname-label">昵称</div>
+                    <div class="profile-nickname-edit">
+                        <input type="text" id="profile-nickname-input" class="lobby-input" placeholder="输入昵称" maxlength="8">
+                        <button id="btn-save-nickname" class="btn-secondary">保存</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="avatar-selection-modal" id="avatar-selection-modal" style="display: none;">
+                <div class="avatar-modal-content">
+                    <h3>选择头像</h3>
+                    <div class="avatar-grid" id="profile-avatar-grid">
+                    </div>
+                    <button id="btn-close-avatar-modal" class="btn-secondary">关闭</button>
+                </div>
+            </div>
             
             <div class="stats-grid">
                 <div class="stat-item">
@@ -369,7 +387,7 @@
     <!-- 游戏主界面 -->
     <div class="game-container" style="display: none;">
         <!-- 版本号 (左上角) -->
-        <div class="version-tag">v3.4.2</div>
+        <div class="version-tag">v3.4.3</div>
 
         <!-- 返回主菜单 (右上角，音效左侧) -->
         <button id="btn-back-menu" class="icon-btn" title="返回主菜单">🏠</button>
@@ -416,10 +434,10 @@
                 <!-- 玩家头像信息 -->
                 <div class="avatar-container">
                     <div class="avatar">
-                        <div class="avatar-img user-avatar">我</div>
+                        <div class="avatar-img user-avatar" id="player-avatar">👨‍💼</div>
                     </div>
                     <div class="player-info">
-                        <div class="name">玩家 (你)</div>
+                        <div class="name" id="player-name">玩家</div>
                         <div class="chips-pill">
                             <span class="currency">$</span>
                             <span id="player-chips">1000</span>
@@ -463,18 +481,18 @@
         </div>
     </div>
 
-    <script src="js/card.js?v=3.4.1"></script>
-    <script src="js/audio.js?v=3.4.1"></script>
-    <script src="js/evaluator.js?v=3.4.1"></script>
-    <script src="js/player.js?v=3.4.1"></script>
+    <script src="js/card.js?v=3.4.3"></script>
+    <script src="js/audio.js?v=3.4.3"></script>
+    <script src="js/evaluator.js?v=3.4.3"></script>
+    <script src="js/player.js?v=3.4.3"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/data.js?v=3.4.1"></script>
-    <script src="js/achievements.js?v=3.4.1"></script>
-    <script src="js/network.js?v=3.4.1"></script>
-    <script src="js/ui.js?v=3.4.1"></script>
-    <script src="js/game_online.js?v=3.4.1"></script>
-    <script src="js/game.js?v=3.4.1"></script>
-    <script src="js/main.js?v=3.4.1"></script>
+    <script src="js/data.js?v=3.4.3"></script>
+    <script src="js/achievements.js?v=3.4.3"></script>
+    <script src="js/network.js?v=3.4.3"></script>
+    <script src="js/ui.js?v=3.4.3"></script>
+    <script src="js/game_online.js?v=3.4.3"></script>
+    <script src="js/game.js?v=3.4.3"></script>
+    <script src="js/main.js?v=3.4.3"></script>
     <script>
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {

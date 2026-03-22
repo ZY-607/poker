@@ -68,22 +68,9 @@ class UI {
             const angle = angles[index];
             const rad = angle * (Math.PI / 180);
             
-            // Radius in percentage relative to container size
-            // Container is .game-layer (90% w, 65% h of screen)
-            // We want them on the edge.
-            const rx = 50; // Horizontal radius %
-            const ry = 50; // Vertical radius %
+            const rx = 50;
+            const ry = 50;
             
-            // Adjust position: Center + (cos(a)*rx, sin(a)*ry)
-            // Note: sin/cos direction. 
-            // In screen coords: X grows right, Y grows down.
-            // 0 deg (Right): x=50+50=100, y=50.
-            // 270 deg (Top): x=50, y=50-50=0.
-            
-            // Math.cos(270) = 0 -> x=50
-            // Math.sin(270) = -1 -> y=50 + (-1)*50 = 0. Correct.
-            
-            // Offset slightly inwards so avatar is fully visible
             const offsetX = Math.cos(rad) * 48; 
             const offsetY = Math.sin(rad) * 48;
             
@@ -93,8 +80,6 @@ class UI {
             const div = document.createElement('div');
             div.className = 'player-seat opponent';
             
-            // Adjust card position for players on the right side (Angles > 270)
-            // Angles: 270 is Top (12 o'clock). > 270 is Top-Right to Right.
             if (angle > 270) {
                 div.classList.add('cards-left');
             }
@@ -103,13 +88,17 @@ class UI {
             div.style.left = `${left}%`;
             div.style.top = `${top}%`;
             
+            const avatarEmoji = p.avatar !== undefined ? this.AVATARS[p.avatar] : this.AVATARS[index % this.AVATARS.length];
+            const oppName = p.name || `电脑${index + 1}`;
+            
             div.innerHTML = `
                 <div class="cards"></div>
                 <div class="avatar-container">
                     <div class="avatar">
-                        <div class="avatar-img opponent-avatar">CPU${index+1}</div>
+                        <div class="avatar-img opponent-avatar">${avatarEmoji}</div>
                     </div>
                     <div class="player-info">
+                        <div class="name opponent-name">${oppName}</div>
                         <div class="chips-pill"><span class="currency">$</span><span class="player-chips">1000</span></div>
                     </div>
                     <div class="status-bubble player-status"></div>
@@ -126,6 +115,16 @@ class UI {
         this.updatePlayerCards(document.getElementById('player-cards'), user.hand, true);
         document.getElementById('player-chips').innerText = user.chips;
         this.updateStatusBubble('player-status', user);
+        
+        const playerAvatar = document.getElementById('player-avatar');
+        const playerName = document.getElementById('player-name');
+        if (playerAvatar) {
+            const avatars = ['👨‍💼', '👩‍💼', '🕵️‍♂️', '🤠', '👽', '🤖', '🐶', '🐯'];
+            playerAvatar.innerText = avatars[DataManager.getAvatar()] || avatars[0];
+        }
+        if (playerName) {
+            playerName.innerText = DataManager.getNickname() || '玩家';
+        }
         
         // User Active State
         const userSeat = document.getElementById('player-area');
@@ -148,10 +147,20 @@ class UI {
             div.querySelector('.player-chips').innerText = p.chips;
             this.updateStatusBubble(div.querySelector('.player-status'), p);
             
-            // Update Opponent Avatar (in case it changed or wasn't set right)
+            // Update Opponent Avatar
             const oppAvatarEl = div.querySelector('.opponent-avatar');
-            if (oppAvatarEl && p.avatar !== undefined) {
-                 oppAvatarEl.innerText = this.AVATARS[p.avatar] || '👤';
+            if (oppAvatarEl) {
+                if (p.avatar !== undefined) {
+                    oppAvatarEl.innerText = this.AVATARS[p.avatar] || '👤';
+                } else {
+                    oppAvatarEl.innerText = this.AVATARS[i % this.AVATARS.length];
+                }
+            }
+            
+            // Update Opponent Name
+            const oppNameEl = div.querySelector('.opponent-name');
+            if (oppNameEl) {
+                oppNameEl.innerText = p.name || `电脑${i}`;
             }
 
             div.classList.toggle('active', game.activePlayerIndex === i);

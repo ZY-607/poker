@@ -3,16 +3,18 @@ class DataManager {
 
     static get defaultProfile() {
         return {
-            chips: 1000, // Initial chips
+            chips: 1000,
+            nickname: '玩家',
+            avatar: 0,
             stats: {
                 totalHands: 0,
                 wins: 0,
-                totalProfit: 0, // Net profit/loss
+                totalProfit: 0,
                 biggestPot: 0,
                 bestHand: { rank: 0, name: "无", cards: [] },
             },
-            history: [], // List of recent games { date, profit, handName }
-            achievements: [] // Placeholder for future
+            history: [],
+            achievements: []
         };
     }
 
@@ -36,6 +38,23 @@ class DataManager {
         const data = this.load();
         data.chips = amount;
         this.save(data);
+    }
+
+    static updateProfile(nickname, avatar) {
+        const data = this.load();
+        if (nickname !== undefined) data.nickname = nickname;
+        if (avatar !== undefined) data.avatar = avatar;
+        this.save(data);
+    }
+
+    static getNickname() {
+        const data = this.load();
+        return data.nickname || '玩家';
+    }
+
+    static getAvatar() {
+        const data = this.load();
+        return data.avatar !== undefined ? data.avatar : 0;
     }
 
     static recordHand(result) {
