@@ -1,13 +1,15 @@
 class Player {
     constructor(name, chips, isComputer = false, personality = {}) {
         this.name = name;
+        this.nickname = name;
         this.chips = chips;
         this.hand = [];
         this.isComputer = isComputer;
         this.currentBet = 0;
         this.folded = false;
         this.isActive = true;
-        this.isSittingOut = false; // New: For waiting rebuy
+        this.isSittingOut = false;
+        this.avatar = 0;
         
         // Personality Attributes (0.0 - 1.0)
         this.aggression = personality.aggression || 0.5; // High: Likes to Raise

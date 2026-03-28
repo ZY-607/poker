@@ -29,13 +29,12 @@ class GameServer {
         const player = new Player(name, 1000);
         player.socketId = socketId;
         
-        // 设置玩家的昵称和头像
         if (userProfile) {
-            player.nickname = userProfile.nickname || userProfile.username || name;
+            player.nickname = userProfile.nickname || name;
             player.avatar = userProfile.avatar !== undefined ? userProfile.avatar : 0;
-        } else {
-            player.nickname = name;
-            player.avatar = 0;
+            if (userProfile.chips !== undefined) {
+                player.chips = userProfile.chips;
+            }
         }
 
         // First player becomes host
@@ -45,10 +44,10 @@ class GameServer {
 
         if (this.gameStarted) {
             this.waitingPlayers.push(player);
-            this.broadcastMessage(`${player.nickname} 加入了房间 (等待下一局)`);
+            this.broadcastMessage(`${name} 加入了房间 (等待下一局)`);
         } else {
             this.players.push(player);
-            this.broadcastMessage(`${player.nickname} 加入了房间`);
+            this.broadcastMessage(`${name} 加入了房间`);
         }
 
         this.broadcastState();
@@ -424,10 +423,9 @@ class GameServer {
                     currentBet: other.currentBet,
                     folded: other.folded,
                     socketId: other.socketId,
-                    avatar: other.avatar !== undefined ? other.avatar : 0,
+                    avatar: other.avatar,
                     isActive: this.players.includes(other),
                     isWaiting: this.waitingPlayers.includes(other),
-                    // Only show cards if it's ME or Showdown
                     hand: (other.socketId === p.socketId || this.phase === 'showdown') ? other.hand : [] 
                 }))
             };
