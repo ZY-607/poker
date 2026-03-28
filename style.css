@@ -1004,22 +1004,27 @@ body {
 /* Info Box */
 .player-info {
     position: absolute;
-    bottom: -15px;
-    width: 100%; /* Match parent width to ensure centering */
+    bottom: -35px;
+    width: 100%;
     display: flex;
-    justify-content: center; /* Center children horizontally */
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     z-index: 12;
 }
 
 .name {
-    font-size: 0.7em;
-    color: #ddd;
+    font-size: 0.75em;
+    color: #fff;
     text-shadow: 0 1px 2px #000;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 80px;
     display: block;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 8px;
+    border-radius: 8px;
 }
 
 /* Chips Pill */

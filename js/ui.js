@@ -98,8 +98,8 @@ class UI {
                         <div class="avatar-img opponent-avatar">${avatarEmoji}</div>
                     </div>
                     <div class="player-info">
-                        <div class="name opponent-name">${oppName}</div>
                         <div class="chips-pill"><span class="currency">$</span><span class="player-chips">1000</span></div>
+                        <div class="name opponent-name">${oppName}</div>
                     </div>
                     <div class="status-bubble player-status"></div>
                 </div>
