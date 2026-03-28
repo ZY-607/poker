@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>德州扑克 v3.5.9</title>
+    <title>德州扑克 v3.6.0</title>
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
@@ -399,7 +399,7 @@
     <!-- 游戏主界面 -->
     <div class="game-container" style="display: none;">
         <!-- 版本号 (左上角) -->
-        <div class="version-tag">v3.5.9</div>
+        <div class="version-tag">v3.6.0</div>
 
         <!-- 返回主菜单 (右上角，音效左侧) -->
         <button id="btn-back-menu" class="icon-btn" title="返回主菜单">🏠</button>
@@ -425,17 +425,6 @@
 
             <!-- 公共区域 -->
             <div class="center-area">
-                <!-- 行动倒计时 -->
-                <div id="action-timer" class="action-timer" style="display: none;">
-                    <div class="timer-icon">⏱️</div>
-                    <div class="timer-content">
-                        <div class="timer-label">行动时间</div>
-                        <div id="timer-display" class="timer-display">1:00</div>
-                    </div>
-                    <div class="timer-progress">
-                        <div id="timer-progress-bar" class="timer-progress-bar"></div>
-                    </div>
-                </div>
                 <div class="pot-container">
                     <div class="pot-label">底池</div>
                     <div class="pot-amount" id="pot-amount">0</div>
@@ -458,13 +447,21 @@
                 <div class="avatar-container">
                     <div class="avatar">
                         <div class="avatar-img user-avatar" id="player-avatar">👨‍💼</div>
+                        <!-- 倒计时进度条 -->
+                        <div class="timer-ring" id="player-timer-ring">
+                            <svg class="timer-ring-svg" viewBox="0 0 100 100">
+                                <circle class="timer-ring-bg" cx="50" cy="50" r="45"/>
+                                <circle class="timer-ring-progress" id="player-timer-progress" cx="50" cy="50" r="45"/>
+                            </svg>
+                            <div class="timer-ring-text" id="player-timer-text">60</div>
+                        </div>
                     </div>
                     <div class="player-info">
-                        <div class="name" id="player-name">玩家</div>
                         <div class="chips-pill">
                             <span class="currency">$</span>
                             <span id="player-chips">1000</span>
                         </div>
+                        <div class="name" id="player-name">玩家</div>
                     </div>
                     <!-- 状态气泡 -->
                     <div class="status-bubble" id="player-status"></div>
@@ -514,7 +511,7 @@
     <script src="js/network.js?v=3.5.3"></script>
     <script src="js/ui.js?v=3.5.3"></script>
     <script src="js/game_online.js?v=3.5.3"></script>
-    <script src="js/timer.js?v=3.5.9"></script>
+    <script src="js/timer.js?v=3.6.0"></script>
     <script src="js/game.js?v=3.5.9"></script>
     <script src="js/main.js?v=3.5.3"></script>
     <script>

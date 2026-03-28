@@ -6,8 +6,8 @@ class TimerManager {
         this.warningThreshold = 10;
         this.criticalThreshold = 5;
         this.onTimeout = null;
-        this.onTick = null;
         this.isActive = false;
+        this.circumference = 283;
     }
 
     start(callback, seconds = 60) {
@@ -38,10 +38,6 @@ class TimerManager {
         this.remainingSeconds--;
         this.updateDisplay();
 
-        if (this.onTick) {
-            this.onTick(this.remainingSeconds);
-        }
-
         if (this.remainingSeconds <= 0) {
             this.stop();
             if (this.onTimeout) {
@@ -51,41 +47,33 @@ class TimerManager {
     }
 
     updateDisplay() {
-        const container = document.getElementById('action-timer');
-        const display = document.getElementById('timer-display');
-        const progressBar = document.getElementById('timer-progress-bar');
+        const ring = document.getElementById('player-timer-ring');
+        const progress = document.getElementById('player-timer-progress');
+        const text = document.getElementById('player-timer-text');
         
-        if (!container || !display) return;
+        if (!ring || !progress || !text) return;
 
-        container.style.display = 'flex';
-        display.innerText = this.formatTime(this.remainingSeconds);
+        ring.classList.add('active');
+        text.innerText = this.remainingSeconds;
 
-        if (progressBar) {
-            const percentage = (this.remainingSeconds / this.maxSeconds) * 100;
-            progressBar.style.width = `${percentage}%`;
-        }
+        const percentage = this.remainingSeconds / this.maxSeconds;
+        const offset = this.circumference * (1 - percentage);
+        progress.style.strokeDashoffset = offset;
 
-        container.classList.remove('warning', 'critical');
+        ring.classList.remove('warning', 'critical');
         
         if (this.remainingSeconds <= this.criticalThreshold) {
-            container.classList.add('critical');
+            ring.classList.add('critical');
         } else if (this.remainingSeconds <= this.warningThreshold) {
-            container.classList.add('warning');
+            ring.classList.add('warning');
         }
     }
 
     hideDisplay() {
-        const container = document.getElementById('action-timer');
-        if (container) {
-            container.style.display = 'none';
-            container.classList.remove('warning', 'critical');
+        const ring = document.getElementById('player-timer-ring');
+        if (ring) {
+            ring.classList.remove('active', 'warning', 'critical');
         }
-    }
-
-    formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     getRemainingSeconds() {
