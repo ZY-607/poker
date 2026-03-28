@@ -25,9 +25,18 @@ class GameServer {
         this.hostSocketId = null; // Who can start the game
     }
 
-    addPlayer(socketId, name) {
+    addPlayer(socketId, name, userProfile = null) {
         const player = new Player(name, 1000);
         player.socketId = socketId;
+        
+        // 设置玩家的昵称和头像
+        if (userProfile) {
+            player.nickname = userProfile.nickname || userProfile.username || name;
+            player.avatar = userProfile.avatar !== undefined ? userProfile.avatar : 0;
+        } else {
+            player.nickname = name;
+            player.avatar = 0;
+        }
 
         // First player becomes host
         if (this.players.length === 0 && this.waitingPlayers.length === 0) {
@@ -36,10 +45,10 @@ class GameServer {
 
         if (this.gameStarted) {
             this.waitingPlayers.push(player);
-            this.broadcastMessage(`${name} 加入了房间 (等待下一局)`);
+            this.broadcastMessage(`${player.nickname} 加入了房间 (等待下一局)`);
         } else {
             this.players.push(player);
-            this.broadcastMessage(`${name} 加入了房间`);
+            this.broadcastMessage(`${player.nickname} 加入了房间`);
         }
 
         this.broadcastState();
@@ -410,12 +419,12 @@ class GameServer {
                 isHost: p.socketId === this.hostSocketId,
                 isWaiting: this.waitingPlayers.includes(p),
                 players: allPlayers.map((other, idx) => ({
-                    name: other.name,
+                    name: other.nickname || other.name,
                     chips: other.chips,
                     currentBet: other.currentBet,
                     folded: other.folded,
                     socketId: other.socketId,
-                    avatar: other.avatar, // Send avatar
+                    avatar: other.avatar !== undefined ? other.avatar : 0,
                     isActive: this.players.includes(other),
                     isWaiting: this.waitingPlayers.includes(other),
                     // Only show cards if it's ME or Showdown
