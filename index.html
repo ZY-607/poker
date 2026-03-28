@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>德州扑克 v3.5.7</title>
+    <title>德州扑克 v3.5.8</title>
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
@@ -386,12 +386,12 @@
 
     <!-- 退出确认弹窗 -->
     <div id="exit-confirm-overlay" class="lobby-overlay" style="display: none;">
-        <div class="lobby-box">
-            <h1>返回主菜单</h1>
-            <p id="exit-confirm-message" style="color: #aaa; margin: 15px 0;">确定要返回主菜单吗？</p>
-            <div class="lobby-actions">
-                <button id="btn-exit-confirm" class="btn-primary">确定</button>
-                <button id="btn-exit-cancel" class="btn-secondary">取消</button>
+        <div class="lobby-box exit-confirm-box">
+            <h1>🏠 返回主菜单</h1>
+            <p id="exit-confirm-message">确定要返回主菜单吗？</p>
+            <div class="exit-confirm-actions">
+                <button id="btn-exit-confirm" class="btn-exit-confirm">确定退出</button>
+                <button id="btn-exit-cancel" class="btn-exit-cancel">继续游戏</button>
             </div>
         </div>
     </div>
@@ -399,7 +399,7 @@
     <!-- 游戏主界面 -->
     <div class="game-container" style="display: none;">
         <!-- 版本号 (左上角) -->
-        <div class="version-tag">v3.5.7</div>
+        <div class="version-tag">v3.5.8</div>
 
         <!-- 返回主菜单 (右上角，音效左侧) -->
         <button id="btn-back-menu" class="icon-btn" title="返回主菜单">🏠</button>

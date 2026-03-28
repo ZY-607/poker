@@ -532,6 +532,64 @@ body {
     margin-top: 20px;
 }
 
+/* 退出确认弹窗样式 */
+.exit-confirm-box {
+    max-width: 320px;
+}
+
+.exit-confirm-box h1 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.exit-confirm-box p {
+    color: #aaa;
+    margin: 15px 0;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.exit-confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-exit-confirm {
+    background: #e74c3c;
+    border: none;
+    color: #fff;
+    padding: 14px 30px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-exit-confirm:hover {
+    background: #c0392b;
+    transform: scale(1.02);
+}
+
+.btn-exit-cancel {
+    background: transparent;
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 12px 30px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-exit-cancel:hover {
+    background: var(--accent-gold);
+    color: #000;
+}
+
 .btn-secondary {
     background: transparent;
     border: 1px solid #666;
