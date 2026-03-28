@@ -141,41 +141,56 @@ class OnlineGame {
     }
 
     exitGame() {
-        if(confirm('确定要退出房间吗？')) {
-             // 1. Leave room (but stay connected)
+        this.showExitConfirm('确定要退出房间吗？', () => {
              networkManager.leaveRoom();
              
-             // 2. Reset internal state
              this.roomId = null;
              this.gameState = null;
              this.myPlayerIndex = -1;
              this.socketId = null;
 
-             // 3. Reset UI
              document.querySelector('.game-container').style.display = 'none';
              document.getElementById('main-menu').style.display = 'flex';
              
-             // Clear opponents
              this.ui.setupOpponents([]);
-             // Clear community cards
              this.ui.updateCommunityCards([]);
-             // Clear pot
              this.ui.updatePot(0);
-             // Clear messages
              this.ui.showMessage('');
-             // Clear player cards
              const playerCards = document.getElementById('player-cards');
              if(playerCards) playerCards.innerHTML = '';
              
-             // Reset version tag
              const ver = document.querySelector('.version-tag');
              if(ver) ver.innerText = ver.innerText.split('|')[0].trim();
              
-             // Reset player chips display in menu
              const data = DataManager.load();
              const el = document.getElementById('menu-chip-count');
              if (el) el.innerText = data.chips;
-        }
+        });
+    }
+    
+    showExitConfirm(message, onConfirm) {
+        const overlay = document.getElementById('exit-confirm-overlay');
+        const msgEl = document.getElementById('exit-confirm-message');
+        const btnConfirm = document.getElementById('btn-exit-confirm');
+        const btnCancel = document.getElementById('btn-exit-cancel');
+        
+        msgEl.innerText = message;
+        overlay.style.display = 'flex';
+        
+        const newBtnConfirm = btnConfirm.cloneNode(true);
+        btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
+        
+        const newBtnCancel = btnCancel.cloneNode(true);
+        btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+        
+        newBtnConfirm.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            if (onConfirm) onConfirm();
+        });
+        
+        newBtnCancel.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
     }
 
     updateState(state) {

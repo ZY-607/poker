@@ -190,17 +190,16 @@ class Game {
         document.getElementById('btn-back-menu').addEventListener('click', () => {
             let msg = '确定要返回主菜单吗？';
             if (this.mode === 'cash') {
-                msg += '当前牌局将直接结束，您的筹码将自动保存。';
+                msg += '\n当前牌局将直接结束，您的筹码将自动保存。';
             } else {
-                msg += '锦标赛中途退出将被视为弃权，无法获得退款或奖金！';
+                msg += '\n锦标赛中途退出将被视为弃权，无法获得退款或奖金！';
             }
-            
-            if(confirm(msg)) {
+            this.showExitConfirm(msg, () => {
                 this.stopGame(); 
                 document.querySelector('.game-container').style.display = 'none';
                 document.getElementById('main-menu').style.display = 'flex';
                 this.updateMenuChips();
-            }
+            });
         });
 
         document.getElementById('btn-fold').addEventListener('click', () => this.handleAction('fold'));
@@ -286,6 +285,31 @@ class Game {
         const data = DataManager.load();
         const el = document.getElementById('menu-chip-count');
         if (el) el.innerText = data.chips;
+    }
+
+    showExitConfirm(message, onConfirm) {
+        const overlay = document.getElementById('exit-confirm-overlay');
+        const msgEl = document.getElementById('exit-confirm-message');
+        const btnConfirm = document.getElementById('btn-exit-confirm');
+        const btnCancel = document.getElementById('btn-exit-cancel');
+        
+        msgEl.innerText = message;
+        overlay.style.display = 'flex';
+        
+        const newBtnConfirm = btnConfirm.cloneNode(true);
+        btnConfirm.parentNode.replaceChild(newBtnConfirm, btnConfirm);
+        
+        const newBtnCancel = btnCancel.cloneNode(true);
+        btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+        
+        newBtnConfirm.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            if (onConfirm) onConfirm();
+        });
+        
+        newBtnCancel.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
     }
 
     initGame(mode, config) {
