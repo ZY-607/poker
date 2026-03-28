@@ -327,8 +327,12 @@ class OnlineGame {
             this.enableControls(me, state);
             this.ui.showMessage("轮到你了");
             soundManager.playAlert();
+            timerManager.start(() => {
+                networkManager.sendAction('fold');
+            }, 60);
         } else {
             this.disableControls();
+            timerManager.stop();
         }
     }
 

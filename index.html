@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>德州扑克 v3.5.8</title>
+    <title>德州扑克 v3.5.9</title>
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
@@ -399,7 +399,7 @@
     <!-- 游戏主界面 -->
     <div class="game-container" style="display: none;">
         <!-- 版本号 (左上角) -->
-        <div class="version-tag">v3.5.8</div>
+        <div class="version-tag">v3.5.9</div>
 
         <!-- 返回主菜单 (右上角，音效左侧) -->
         <button id="btn-back-menu" class="icon-btn" title="返回主菜单">🏠</button>
@@ -425,6 +425,17 @@
 
             <!-- 公共区域 -->
             <div class="center-area">
+                <!-- 行动倒计时 -->
+                <div id="action-timer" class="action-timer" style="display: none;">
+                    <div class="timer-icon">⏱️</div>
+                    <div class="timer-content">
+                        <div class="timer-label">行动时间</div>
+                        <div id="timer-display" class="timer-display">1:00</div>
+                    </div>
+                    <div class="timer-progress">
+                        <div id="timer-progress-bar" class="timer-progress-bar"></div>
+                    </div>
+                </div>
                 <div class="pot-container">
                     <div class="pot-label">底池</div>
                     <div class="pot-amount" id="pot-amount">0</div>
@@ -503,7 +514,8 @@
     <script src="js/network.js?v=3.5.3"></script>
     <script src="js/ui.js?v=3.5.3"></script>
     <script src="js/game_online.js?v=3.5.3"></script>
-    <script src="js/game.js?v=3.5.3"></script>
+    <script src="js/timer.js?v=3.5.9"></script>
+    <script src="js/game.js?v=3.5.9"></script>
     <script src="js/main.js?v=3.5.3"></script>
     <script>
         // Register Service Worker for PWA

@@ -973,6 +973,98 @@ body {
     width: 100%;
 }
 
+/* --- Action Timer --- */
+.action-timer {
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid var(--accent-gold);
+    border-radius: 15px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-timer.warning {
+    border-color: #f39c12;
+    animation: timer-pulse 1s infinite;
+}
+
+.action-timer.critical {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.2);
+    animation: timer-critical 0.5s infinite;
+}
+
+.timer-icon {
+    font-size: 1.5em;
+}
+
+.timer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timer-label {
+    font-size: 0.7em;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timer-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+}
+
+.action-timer.warning .timer-display {
+    color: #f39c12;
+}
+
+.action-timer.critical .timer-display {
+    color: #e74c3c;
+}
+
+.timer-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.timer-progress-bar {
+    height: 100%;
+    background: var(--accent-gold);
+    width: 100%;
+    transition: width 1s linear;
+}
+
+.action-timer.warning .timer-progress-bar {
+    background: #f39c12;
+}
+
+.action-timer.critical .timer-progress-bar {
+    background: #e74c3c;
+}
+
+@keyframes timer-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+@keyframes timer-critical {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 25px rgba(231, 76, 60, 0.8); }
+}
+
 .pot-container {
     background: rgba(0,0,0,0.5);
     padding: 5px 15px;

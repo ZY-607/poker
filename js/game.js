@@ -631,10 +631,11 @@ class Game {
 
     // New centralized action handler
     handleAction(action, amount = 0) {
+        timerManager.stop();
+        
         const playerIndex = this.activePlayerIndex;
         const player = this.players[playerIndex];
         
-        // Safety check
         if (!player) return;
 
         if (player === this.players[0]) this.disableControls();
@@ -742,12 +743,16 @@ class Game {
 
         if (player.isComputer) {
             this.disableControls();
+            timerManager.stop();
             this.ui.showMessage(`${player.name} 思考中...`);
             this.setTimeout(() => this.computerAI(), 800);
         } else {
             this.ui.showMessage("轮到你了");
             soundManager.playAlert();
             this.enableControls();
+            timerManager.start(() => {
+                this.handleAction('fold');
+            }, 60);
         }
     }
 
