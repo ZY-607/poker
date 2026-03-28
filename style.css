@@ -1129,7 +1129,7 @@ body {
 
 #player-area .status-bubble {
     top: auto;
-    bottom: -60px; /* Move further down to clear chips */
+    bottom: -85px;
 }
 #player-area {
     /* Fixed at bottom center of the GAME LAYER (which is the table) */
