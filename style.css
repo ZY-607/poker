@@ -979,11 +979,12 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70px;
-    height: 70px;
+    width: 76px;
+    height: 76px;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 10;
 }
 
 .timer-ring.active {
@@ -1007,18 +1008,27 @@ body {
 
 .timer-ring-bg {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.2);
-    stroke-width: 4;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 5;
 }
 
 .timer-ring-progress {
     fill: none;
     stroke: var(--accent-gold);
-    stroke-width: 4;
+    stroke-width: 5;
     stroke-linecap: round;
     stroke-dasharray: 283;
     stroke-dashoffset: 283;
     transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 3px var(--accent-gold));
+}
+
+.timer-ring.warning .timer-ring-progress {
+    filter: drop-shadow(0 0 5px #f39c12);
+}
+
+.timer-ring.critical .timer-ring-progress {
+    filter: drop-shadow(0 0 8px #e74c3c);
 }
 
 .timer-ring-text {
@@ -1026,10 +1036,10 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.9em;
+    font-size: 1em;
     font-weight: bold;
     color: #fff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .timer-ring.warning .timer-ring-text {
@@ -1038,11 +1048,17 @@ body {
 
 .timer-ring.critical .timer-ring-text {
     color: #e74c3c;
+    animation: timer-text-pulse 0.5s infinite;
 }
 
 @keyframes timer-pulse-fast {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes timer-text-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
 }
 
 .pot-container {
